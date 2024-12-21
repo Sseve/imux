@@ -6,8 +6,7 @@ import (
 	"github.com/Sseve/imux"
 )
 
-// Logger 中间件示例
-// 示例中间件
+// Logger 中间件
 func Logger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		println("Request:", r.Method, r.URL.Path)
@@ -15,6 +14,7 @@ func Logger(next http.Handler) http.Handler {
 	})
 }
 
+// Auth 认证中间件
 func Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token := r.Header.Get("Authorization")
@@ -22,6 +22,8 @@ func Auth(next http.Handler) http.Handler {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
+                // 认证 token 逻辑
+                // ...
 		next.ServeHTTP(w, r)
 	})
 }
@@ -38,6 +40,13 @@ func main() {
 
 	mux.Get("/ping", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		imux.Success(w, imux.Map{"code": 200, "message": "pong"})
+	}))
+
+        // 获取 < /pong?name=zhangsan&password=123456 > 查询参数
+	mux.Get("/pong", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		name := r.URL.Query().Get("name")
+		password := r.URL.Query().Get("password")
+		imux.Success(w, imux.Map{"code": 200, "message": "pong", "name": name, "password": password})
 	}))
 
 	// 路由分组
