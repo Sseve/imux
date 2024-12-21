@@ -65,6 +65,23 @@ func main() {
 		imux.Success(w, imux.Map{"code": 200, "message": "Create user success"})
 	}))
 
+	v1 := mux.Group("/v1")
+	v1.Get("/hello", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		imux.Success(w, imux.Map{"code": 200, "message": "Get hello"})
+	}))
+
+	v1.Post("/hello", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		imux.Success(w, imux.Map{"code": 200, "message": "Post hello"})
+	}))
+
+	v1.Delete("/hello", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		imux.Success(w, imux.Map{"code": 200, "message": "Delete hello"})
+	}))
+
+	v1.Put("/hello", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		imux.Success(w, imux.Map{"code": 200, "message": "Put hello"})
+	}))
+
 	// 启动服务
 	server := http.Server{
 		Addr:    ":9990",
