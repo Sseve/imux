@@ -8,7 +8,7 @@
 ---
 1. curl http://localhost:9990/api/foo/666 -H 'Authorization:abc'  
    {"code":200,"message":"Get foo id: 666"}
-2. curl http://localhost:9990/api/foo -H 'Authorization:abc' -d '{"foo": "FOO", "bar": "BAR"}'
+2. curl http://localhost:9990/api/foo -H 'Authorization:abc' -d '{"foo": "FOO", "bar": "BAR"}'  
    {"code":200,"message":"test foo bind success"}
 ---
 1. curl http://localhost:9990/v1/hello -XGET  
