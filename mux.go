@@ -68,23 +68,23 @@ func (r *Router) Group(prefix string, mws ...Middleware) *Router {
 }
 
 // Get 注册 GET 请求路由
-func (r *Router) Get(pattern string, handler http.Handler) {
-	r.Handle(http.MethodGet, pattern, handler)
+func (r *Router) Get(pattern string, handlerFun http.HandlerFunc) {
+	r.Handle(http.MethodGet, pattern, handlerFun)
 }
 
 // Post 注册 POST 请求路由
-func (r *Router) Post(pattern string, handler http.Handler) {
-	r.Handle(http.MethodPost, pattern, handler)
+func (r *Router) Post(pattern string, handlerFun http.HandlerFunc) {
+	r.Handle(http.MethodPost, pattern, handlerFun)
 }
 
 // Delete 注册 DELETE 请求路由
-func (r *Router) Delete(pattern string, handler http.Handler) {
-	r.Handle(http.MethodDelete, pattern, handler)
+func (r *Router) Delete(pattern string, handlerFun http.HandlerFunc) {
+	r.Handle(http.MethodDelete, pattern, handlerFun)
 }
 
 // Put 注册 PUT 请求路由
-func (r *Router) Put(pattern string, handler http.Handler) {
-	r.Handle(http.MethodPut, pattern, handler)
+func (r *Router) Put(pattern string, handlerFun http.HandlerFunc) {
+	r.Handle(http.MethodPut, pattern, handlerFun)
 }
 
 // ServeHTTP 实现 http.Handler 接口
@@ -115,12 +115,10 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		http.NotFound(w, req)
 		return
 	}
-
 	// 应用全局中间件
 	for _, mw := range r.middlewares {
 		handler = mw(handler)
 	}
-
 	if handler != nil {
 		// 获取查询参数并将其添加到上下文
 		req = addParamsToContext(req, params)
@@ -172,7 +170,6 @@ func matchPattern(pattern string, pathParts []string) map[string]string {
 	if len(patternParts) != len(pathParts) {
 		return nil
 	}
-
 	params := make(map[string]string)
 	for i, part := range patternParts {
 		if part == "*" {
@@ -187,19 +184,16 @@ func matchPattern(pattern string, pathParts []string) map[string]string {
 	return params
 }
 
-// 路由参数上下文工具
-type contextKey string
-
 // 将路由参数添加到请求上下文
 func addParamsToContext(req *http.Request, params map[string]string) *http.Request {
 	ctx := req.Context()
 	for key, value := range params {
-		ctx = context.WithValue(ctx, contextKey(key), value)
+		ctx = context.WithValue(ctx, key, value)
 	}
 	return req.WithContext(ctx)
 }
 
-// 从请求上下文获取路由参数
+// Param 从请求上下文获取路由参数
 func Param(req *http.Request, key string) string {
 	if val, ok := req.Context().Value(key).(string); ok {
 		return val
