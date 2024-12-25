@@ -81,12 +81,12 @@ func foo(w http.ResponseWriter, r *http.Request) {
 		Foo string `json:"foo"`
 		Bar string `json:"bar"`
 	}
-	var foo FooForm
-	if err := imux.Bind(r, &foo); err != nil {
+	var fooForm FooForm
+	if err := imux.Bind(r, &fooForm); err != nil {
 		imux.Failure(w, imux.Map{"code": 500, "message": "bind foo error"})
 		return
 	}
-	imux.Success(w, imux.Map{"code": 200, "message": "test foo bind success"})
+	imux.Success(w, imux.Map{"code": 200, "fooForm": fooForm})
 }
 
 // RESTFul API 接口示例
