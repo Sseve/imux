@@ -11,11 +11,11 @@
 2. curl http://localhost:9990/api/foo -H 'Authorization:abc' -d '{"foo": "FOO", "bar": "BAR"}'  
    {"code":200,"message":"test foo bind success"}
 ---
-1. curl http://localhost:9990/v1/hello -XGET  
+1. curl -XGET http://localhost:9990/v1/hello  
    {"code":200,"message":"Hello Get"}
-2. curl http://localhost:9990/v1/hello -XPOST  
+2. curl -XPOST http://localhost:9990/v1/hello  
    {"code":200,"message":"Hello Post"}
-3. curl http://localhost:9990/v1/hello -XDELETE  
+3. curl -XDELETE http://localhost:9990/v1/hello  
    {"code":200,"message":"Hello Delete"}
-4. curl http://localhost:9990/v1/hello -XPUT  
+4. curl -XPUT http://localhost:9990/v1/hello  
    {"code":200,"message":"Hello Put"}

@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/Sseve/imux/env"
 	"net/http"
 	"os"
 
 	"github.com/Sseve/imux"
+	mapi "github.com/Sseve/imux/_example/api"
+	"github.com/Sseve/imux/env"
 )
 
 // Logger 中间件
@@ -31,33 +32,32 @@ func Auth(next http.Handler) http.Handler {
 	})
 }
 
-var (
-	version string = "0.1.0"
-)
+// -ldflags="-X main.version=0.1.1"
+var version = "0.1.0"
 
 func main() {
-	fmt.Println("当前版本: ", version)
+	fmt.Println("版本: ", version)
 	// 加载配置
 	env.LoadEnv(".env")
 	mux := imux.NewRouter()
 	// 添加全局中间件
 	mux.Use(Logger)
 
-	mux.Get("/ping", ping)
+	mux.Get("/ping", mapi.Ping)
 	// 获取 < /pong?foo=FOO&bar=BAR > 查询参数
-	mux.Get("/pong", pong)
+	mux.Get("/pong", mapi.Pong)
 
 	// 路由分组
 	api := mux.Group("/api", Auth)
-	api.Get("/foo/:id", fooId)
-	api.Post("/foo", foo)
+	api.Get("/foo/:id", mapi.FooId)
+	api.Post("/foo", mapi.Foo)
 
-	// 路由分组: RESTFul API
+	// 路由分组: restful api 接口
 	v1 := mux.Group("/v1")
-	v1.Get("/hello", helloGet)
-	v1.Post("/hello", helloPost)
-	v1.Delete("/hello", helloDelete)
-	v1.Put("/hello", helloPut)
+	v1.Get("/hello", mapi.HelloGet)
+	v1.Post("/hello", mapi.HelloPost)
+	v1.Delete("/hello", mapi.HelloDelete)
+	v1.Put("/hello", mapi.HelloPut)
 
 	// 启动服务
 	address := os.Getenv("app.address")
@@ -66,54 +66,4 @@ func main() {
 	if err := server.ListenAndServe(); err != nil {
 		panic(err)
 	}
-}
-
-// 全局路由控制器示例
-func ping(w http.ResponseWriter, r *http.Request) {
-	imux.Success(w, imux.Map{"code": 200, "message": "pong"})
-}
-
-// 查询参数接口示例 < /pong?foo=FOO&bar=BAR >
-func pong(w http.ResponseWriter, r *http.Request) {
-	foo := r.URL.Query().Get("foo")
-	bar := r.URL.Query().Get("bar")
-	imux.Success(w, imux.Map{"code": 200, "foo": foo, "bar": bar})
-}
-
-// 路径参数接口示例 </api/hello/:id>
-func fooId(w http.ResponseWriter, r *http.Request) {
-	id := imux.Param(r, "id")
-	imux.Success(w, imux.Map{"code": 200, "message": "Get foo id: " + id})
-}
-
-// 请求参数绑定接口示例
-func foo(w http.ResponseWriter, r *http.Request) {
-	// 请求参数schema
-	type FooForm struct {
-		Foo string `json:"foo"`
-		Bar string `json:"bar"`
-	}
-	var fooForm FooForm
-	if err := imux.Bind(r, &fooForm); err != nil {
-		imux.Failure(w, imux.Map{"code": 500, "message": "bind foo error"})
-		return
-	}
-	imux.Success(w, imux.Map{"code": 200, "fooForm": fooForm})
-}
-
-// RESTFul API 接口示例
-func helloGet(w http.ResponseWriter, r *http.Request) {
-	imux.Success(w, imux.Map{"code": 200, "message": "Hello Get"})
-}
-
-func helloPost(w http.ResponseWriter, r *http.Request) {
-	imux.Success(w, imux.Map{"code": 200, "message": "Hello Post"})
-}
-
-func helloDelete(w http.ResponseWriter, r *http.Request) {
-	imux.Success(w, imux.Map{"code": 200, "message": "Hello Delete"})
-}
-
-func helloPut(w http.ResponseWriter, r *http.Request) {
-	imux.Success(w, imux.Map{"code": 200, "message": "Hello Put"})
 }
