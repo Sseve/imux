@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/Sseve/imux/env"
 	"net/http"
 	"os"
@@ -30,7 +31,12 @@ func Auth(next http.Handler) http.Handler {
 	})
 }
 
+var (
+	version string = "0.1.0"
+)
+
 func main() {
+	fmt.Println("当前版本: ", version)
 	// 加载配置
 	env.LoadEnv(".env")
 	mux := imux.NewRouter()
