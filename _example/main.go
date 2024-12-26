@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/Sseve/imux"
-	mapi "github.com/Sseve/imux/_example/api"
+	"github.com/Sseve/imux/_example/api"
 	"github.com/Sseve/imux/_example/mws"
 	"github.com/Sseve/imux/env"
 )
@@ -22,21 +22,21 @@ func main() {
 	// 添加全局中间件
 	mux.Use(mws.Logger)
 
-	mux.Get("/ping", mapi.Ping)
+	mux.Get("/ping", api.Ping)
 	// 获取 < /pong?foo=FOO&bar=BAR > 查询参数
-	mux.Get("/pong", mapi.Pong)
+	mux.Get("/pong", api.Pong)
 
 	// 路由分组
-	api := mux.Group("/api", mws.Auth)
-	api.Get("/foo/:id", mapi.FooId)
-	api.Post("/foo", mapi.Foo)
+	v1 := mux.Group("/v1", mws.Auth)
+	v1.Get("/foo/:id", api.FooId)
+	v1.Post("/foo", api.Foo)
 
 	// 路由分组: restful api 接口
-	v1 := mux.Group("/v1")
-	v1.Get("/hello", mapi.HelloGet)
-	v1.Post("/hello", mapi.HelloPost)
-	v1.Delete("/hello", mapi.HelloDelete)
-	v1.Put("/hello", mapi.HelloPut)
+	v2 := mux.Group("/v2")
+	v2.Get("/hello", api.HelloGet)
+	v2.Post("/hello", api.HelloPost)
+	v2.Delete("/hello", api.HelloDelete)
+	v2.Put("/hello", api.HelloPut)
 
 	// 启动服务
 	address := os.Getenv("app.address")
