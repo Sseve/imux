@@ -60,7 +60,9 @@ func main() {
 	v1.Put("/hello", helloPut)
 
 	// 启动服务
-	server := http.Server{Addr: os.Getenv("app.address"), Handler: mux}
+	address := os.Getenv("app.address")
+	server := http.Server{Addr: address, Handler: mux}
+	fmt.Printf("App Run [%s]\n", address)
 	if err := server.ListenAndServe(); err != nil {
 		panic(err)
 	}
