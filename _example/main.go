@@ -7,30 +7,9 @@ import (
 
 	"github.com/Sseve/imux"
 	mapi "github.com/Sseve/imux/_example/api"
+	"github.com/Sseve/imux/_example/mws"
 	"github.com/Sseve/imux/env"
 )
-
-// Logger 中间件
-func Logger(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		println("Request:", r.Method, r.URL.Path)
-		next.ServeHTTP(w, r)
-	})
-}
-
-// Auth 认证中间件
-func Auth(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token := r.Header.Get("Authorization")
-		if token == "" {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
-		// 认证 token 逻辑
-		// ...
-		next.ServeHTTP(w, r)
-	})
-}
 
 // -ldflags="-X main.version=0.1.1"
 var version = "0.1.0"
@@ -41,14 +20,14 @@ func main() {
 	env.LoadEnv(".env")
 	mux := imux.NewRouter()
 	// 添加全局中间件
-	mux.Use(Logger)
+	mux.Use(mws.Logger)
 
 	mux.Get("/ping", mapi.Ping)
 	// 获取 < /pong?foo=FOO&bar=BAR > 查询参数
 	mux.Get("/pong", mapi.Pong)
 
 	// 路由分组
-	api := mux.Group("/api", Auth)
+	api := mux.Group("/api", mws.Auth)
 	api.Get("/foo/:id", mapi.FooId)
 	api.Post("/foo", mapi.Foo)
 
