@@ -25,15 +25,12 @@ func Verify(storagePwd, inputPwd string) (bool, error) {
 	if len(parts) != 2 {
 		return false, errors.New("invalid stored password format")
 	}
-
 	salt := parts[0]
 	hashedPassword := parts[1]
-
 	// 重新生成输入密码的哈希值
 	inputHash := sha256.New()
 	inputHash.Write([]byte(salt + inputPwd))
 	inputHashedPassword := base64.URLEncoding.EncodeToString(inputHash.Sum(nil))
-
 	// 使用 `subtle.ConstantTimeCompare` 进行时间安全的比较
 	if subtle.ConstantTimeCompare([]byte(hashedPassword), []byte(inputHashedPassword)) == 1 {
 		return true, nil

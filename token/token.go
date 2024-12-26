@@ -53,14 +53,12 @@ func Parse(token string) (*payLoad, error) {
 	if err != nil {
 		return nil, errors.New("failed to decode payload")
 	}
-
 	// 解析 JSON
 	var payload payLoad
 	err = json.Unmarshal(payloadBytes, &payload)
 	if err != nil {
 		return nil, errors.New("failed to parse payload")
 	}
-
 	// 检查是否过期
 	if payload.ExpiresAt < time.Now().Unix() {
 		return nil, errors.New("token has expired")
