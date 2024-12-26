@@ -1,7 +1,9 @@
 package main
 
 import (
+	"github.com/Sseve/imux/env"
 	"net/http"
+	"os"
 
 	"github.com/Sseve/imux"
 )
@@ -29,6 +31,8 @@ func Auth(next http.Handler) http.Handler {
 }
 
 func main() {
+	// 加载配置
+	env.LoadEnv(".env")
 	mux := imux.NewRouter()
 	// 添加全局中间件
 	mux.Use(Logger)
@@ -50,7 +54,7 @@ func main() {
 	v1.Put("/hello", helloPut)
 
 	// 启动服务
-	server := http.Server{Addr: ":9990", Handler: mux}
+	server := http.Server{Addr: os.Getenv("app.address"), Handler: mux}
 	if err := server.ListenAndServe(); err != nil {
 		panic(err)
 	}
